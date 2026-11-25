@@ -25,6 +25,7 @@ function createEl(tag, className, text) {
 }
 
 let allGames = [];
+let activeStatus = "all";
 
 async function loadGames() {
   const grid = document.getElementById("gamesGrid");
@@ -33,43 +34,123 @@ async function loadGames() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     allGames = Array.isArray(data) ? data : [];
+    updateStats();
+    updateHero();
     renderGames();
-  } catch (err) {
+  } catch {
     grid.innerHTML = "";
     const box = createEl("div", "empty-state");
+    box.style.gridColumn = "1 / -1";
     box.appendChild(createEl("h2", "", "Erro ao carregar traduções"));
     box.appendChild(createEl("p", "", "Tente recarregar a página em alguns instantes."));
     grid.appendChild(box);
   }
 }
 
+function updateStats() {
+  const total = allGames.length;
+  const done = allGames.filter((g) => g.status === "Concluído" || Number(g.progresso) === 100).length;
+  const wip = allGames.filter((g) => g.status === "Em andamento" || g.status === "Beta").length;
+
+  document.getElementById("statTotal").textContent = String(total);
+  document.getElementById("statDone").textContent = String(done);
+  document.getElementById("statWip").textContent = String(wip);
+}
+
+function updateHero() {
+  if (allGames.length === 0) return;
+
+  const featured = allGames.find((g) => g.destaque === true) || allGames[0];
+  document.getElementById("heroBadgeText").textContent = featured.destaque
+    ? "Destaque da Equipe"
+    : "Lançamento Recente";
+  document.getElementById("heroTitle").textContent = featured.titulo || "Tradução em Destaque";
+  document.getElementById("heroDesc").textContent =
+    featured.descricao || "Confira a ficha completa e baixe o patch de tradução para PC.";
+
+  const bg = document.getElementById("heroBg");
+  const poster = document.getElementById("heroPoster");
+  poster.innerHTML = "";
+
+  if (isSafeUrl(featured.capa)) {
+    bg.style.backgroundImage = `url("${featured.capa.replace(/"/g, '\\"')}")`;
+    const img = createEl("img");
+    img.src = featured.capa;
+    img.alt = `Capa de ${featured.titulo || "jogo"}`;
+    poster.appendChild(img);
+    poster.classList.remove("hidden");
+  } else {
+    bg.style.backgroundImage = "";
+    poster.classList.add("hidden");
+  }
+
+  const meta = document.getElementById("heroMeta");
+  meta.innerHTML = "";
+  const prog = Math.max(0, Math.min(100, Number(featured.progresso ?? 100)));
+  meta.appendChild(createEl("span", "meta-chip", featured.status || "Em andamento"));
+  meta.appendChild(createEl("span", "meta-chip", `${prog}% traduzido`));
+  meta.appendChild(createEl("span", "meta-chip", featured.versao || "v1.0"));
+  if (featured.genero) meta.appendChild(createEl("span", "meta-chip", featured.genero));
+
+  const actions = document.getElementById("heroActions");
+  actions.innerHTML = "";
+
+  if (isSafeUrl(featured.downloadUrl)) {
+    const dl = createEl("a", "btn btn-primary", featured.mirror ? `Baixar Patch (${featured.mirror})` : "Baixar Patch");
+    dl.href = featured.downloadUrl;
+    dl.target = "_blank";
+    dl.rel = "noopener noreferrer";
+    actions.appendChild(dl);
+  }
+
+  const detailsBtn = createEl("button", "btn", "Ver Ficha Técnica");
+  detailsBtn.type = "button";
+  detailsBtn.addEventListener("click", () => openModal(featured));
+  actions.appendChild(detailsBtn);
+}
+
 function renderGames() {
   const grid = document.getElementById("gamesGrid");
   const query = document.getElementById("searchInput").value.trim().toLowerCase();
-  const statusFilter = document.getElementById("statusFilter").value;
+  const genreFilter = document.getElementById("genreFilter").value;
+  const sortBy = document.getElementById("sortFilter").value;
 
   const filtered = allGames.filter((item) => {
     const matchText =
       !query ||
       (item.titulo || "").toLowerCase().includes(query) ||
-      (item.descricao || "").toLowerCase().includes(query);
-    const matchStatus = statusFilter === "all" || item.status === statusFilter;
-    return matchText && matchStatus;
+      (item.descricao || "").toLowerCase().includes(query) ||
+      (item.autor || "").toLowerCase().includes(query);
+    const matchStatus = activeStatus === "all" || item.status === activeStatus;
+    const matchGenre = genreFilter === "all" || (item.genero || "Outro") === genreFilter;
+    return matchText && matchStatus && matchGenre;
   });
+
+  if (sortBy === "az") {
+    filtered.sort((a, b) => (a.titulo || "").localeCompare(b.titulo || "", "pt-BR"));
+  } else if (sortBy === "progress") {
+    filtered.sort((a, b) => Number(b.progresso ?? 0) - Number(a.progresso ?? 0));
+  }
 
   grid.innerHTML = "";
 
   if (filtered.length === 0) {
     const box = createEl("div", "empty-state");
     box.style.gridColumn = "1 / -1";
-    box.appendChild(createEl("h2", "", allGames.length === 0 ? "Nenhuma tradução publicada ainda" : "Nenhum resultado encontrado"));
+    box.appendChild(
+      createEl(
+        "h2",
+        "",
+        allGames.length === 0 ? "Nenhuma tradução publicada ainda" : "Nenhum jogo encontrado"
+      )
+    );
     box.appendChild(
       createEl(
         "p",
         "",
         allGames.length === 0
           ? "Acesse o Painel Admin para cadastrar a primeira tradução."
-          : "Tente buscar por outro nome ou limpar os filtros."
+          : "Tente buscar por outro nome ou limpar os filtros selecionados."
       )
     );
     grid.appendChild(box);
@@ -91,8 +172,15 @@ function renderGames() {
       coverWrap.appendChild(createEl("div", "cover-placeholder", game.titulo || "Sem capa"));
     }
 
+    coverWrap.appendChild(createEl("div", "cover-gradient"));
+
     const badgeCls = STATUS_CLASS[game.status] || "badge-beta";
     coverWrap.appendChild(createEl("span", `badge cover-badge ${badgeCls}`, game.status || "Em andamento"));
+
+    if (game.genero) {
+      coverWrap.appendChild(createEl("span", "badge genre-badge", game.genero));
+    }
+
     card.appendChild(coverWrap);
 
     const body = createEl("div", "card-body");
@@ -110,7 +198,13 @@ function renderGames() {
     bar.appendChild(fill);
     body.appendChild(bar);
 
-    body.appendChild(createEl("p", "card-desc", game.descricao || "Sem descrição."));
+    body.appendChild(createEl("p", "card-desc", game.descricao || "Clique para ver detalhes e instruções."));
+
+    const footer = createEl("div", "card-footer");
+    footer.appendChild(createEl("span", "", game.autor || "NexTraduções"));
+    footer.appendChild(createEl("span", "", game.atualizadoEm || ""));
+    body.appendChild(footer);
+
     card.appendChild(body);
 
     const open = () => openModal(game);
@@ -145,6 +239,14 @@ function openModal(game) {
   badge.className = `badge ${STATUS_CLASS[game.status] || "badge-beta"}`;
   badge.textContent = game.status || "Em andamento";
 
+  const genreBadge = document.getElementById("modalGenre");
+  if (game.genero) {
+    genreBadge.textContent = game.genero;
+    genreBadge.classList.remove("hidden");
+  } else {
+    genreBadge.classList.add("hidden");
+  }
+
   document.getElementById("modalVersao").textContent = game.versao || "v1.0";
   document.getElementById("modalProgresso").textContent = `${Math.max(0, Math.min(100, Number(game.progresso ?? 100)))}%`;
   document.getElementById("modalPlataforma").textContent = game.plataforma || "PC";
@@ -162,6 +264,14 @@ function openModal(game) {
     dlBtn.classList.add("hidden");
   }
 
+  const storeBtn = document.getElementById("modalStore");
+  if (isSafeUrl(game.lojaUrl)) {
+    storeBtn.href = game.lojaUrl;
+    storeBtn.classList.remove("hidden");
+  } else {
+    storeBtn.classList.add("hidden");
+  }
+
   backdrop.classList.add("open");
 }
 
@@ -170,14 +280,32 @@ function closeModal() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("searchInput").addEventListener("input", renderGames);
-  document.getElementById("statusFilter").addEventListener("change", renderGames);
+  const searchInput = document.getElementById("searchInput");
+  searchInput.addEventListener("input", renderGames);
+  document.getElementById("genreFilter").addEventListener("change", renderGames);
+  document.getElementById("sortFilter").addEventListener("change", renderGames);
+
+  document.querySelectorAll("#statusPills .pill-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#statusPills .pill-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      activeStatus = btn.dataset.status || "all";
+      renderGames();
+    });
+  });
+
   document.getElementById("modalClose").addEventListener("click", closeModal);
   document.getElementById("gameModal").addEventListener("click", (e) => {
     if (e.target.id === "gameModal") closeModal();
   });
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeModal();
+    if (e.key === "/" && document.activeElement !== searchInput && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) {
+      e.preventDefault();
+      searchInput.focus();
+    }
   });
+
   loadGames();
 });
