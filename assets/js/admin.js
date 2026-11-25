@@ -2,12 +2,19 @@ const OWNER = "nextraducoes";
 const REPO = "nextraducoes.github.io";
 const DATA_PATH = "data/traducoes.json";
 const TOKEN_KEY = "nextraducoes_gh_token";
+const STATUS_CLASS = {
+  "Concluído": "badge-concluido",
+  "Em andamento": "badge-andamento",
+  "Beta": "badge-beta",
+  "Pausado": "badge-pausado",
+};
 
 let currentToken = "";
 let gamesList = [];
 let dataSha = "";
 let editingId = null;
 let selectedCoverFile = null;
+let currentPreviewDataUrl = "";
 
 function utf8ToBase64(str) {
   const bytes = new TextEncoder().encode(str);
@@ -86,13 +93,14 @@ async function verifyAndLoad(token) {
   currentToken = token.trim();
   const repoInfo = await ghFetch(`/repos/${OWNER}/${REPO}`);
   if (!repoInfo.permissions || !repoInfo.permissions.push) {
-    throw new Error("Este token não tem permissão de escrita (Contents: Read and write) neste repositório.");
+    throw new Error("Este token não tem permissão de escrita neste repositório.");
   }
   localStorage.setItem(TOKEN_KEY, currentToken);
   document.getElementById("loginSection").classList.add("hidden");
   document.getElementById("adminSection").classList.remove("hidden");
   document.getElementById("logoutBtn").classList.remove("hidden");
   await fetchGamesFromApi();
+  syncLivePreview();
 }
 
 async function fetchGamesFromApi() {
@@ -138,6 +146,41 @@ async function uploadCoverFile(file, title) {
     }),
   });
   return filePath;
+}
+
+function syncLivePreview() {
+  const titulo = document.getElementById("titulo").value.trim() || "Nome do Jogo";
+  const genero = document.getElementById("genero").value || "RPG";
+  const status = document.getElementById("status").value || "Concluído";
+  const prog = Math.max(0, Math.min(100, Number(document.getElementById("progresso").value || 0)));
+  const versao = document.getElementById("versao").value.trim() || "v1.0";
+  const autor = document.getElementById("autor").value.trim() || "NexTraduções";
+  const desc = document.getElementById("descricao").value.trim() || "A descrição do projeto aparecerá aqui.";
+  const capaUrl = document.getElementById("capaUrl").value.trim();
+
+  document.getElementById("liveCardTitle").textContent = titulo;
+  document.getElementById("liveCardGenre").textContent = genero;
+  const stEl = document.getElementById("liveCardStatus");
+  stEl.textContent = status;
+  stEl.className = `badge cover-badge ${STATUS_CLASS[status] || "badge-beta"}`;
+  document.getElementById("liveCardVersion").textContent = versao;
+  document.getElementById("liveCardProgressText").textContent = `${prog}%`;
+  document.getElementById("liveCardProgressBar").style.width = `${prog}%`;
+  document.getElementById("liveCardDesc").textContent = desc;
+  document.getElementById("liveCardAuthor").textContent = autor;
+
+  const imgSrc = currentPreviewDataUrl || capaUrl;
+  const liveImg = document.getElementById("liveCardImg");
+  const livePh = document.getElementById("liveCardPlaceholder");
+  if (imgSrc) {
+    liveImg.src = imgSrc.startsWith("http") || imgSrc.startsWith("data:") ? imgSrc : `../${imgSrc}`;
+    liveImg.classList.remove("hidden");
+    livePh.classList.add("hidden");
+  } else {
+    liveImg.classList.add("hidden");
+    livePh.classList.remove("hidden");
+    livePh.textContent = titulo;
+  }
 }
 
 function renderAdminList() {
@@ -207,6 +250,7 @@ function renderAdminList() {
 function loadIntoForm(game) {
   editingId = game.id;
   selectedCoverFile = null;
+  currentPreviewDataUrl = "";
   document.getElementById("coverFile").value = "";
   document.getElementById("formHeading").textContent = `Editando: ${game.titulo}`;
   document.getElementById("submitBtn").textContent = "Salvar Alterações";
@@ -228,12 +272,14 @@ function loadIntoForm(game) {
   document.getElementById("instalacao").value = game.instalacao || "";
 
   updateCoverPreview(game.capa || "");
+  syncLivePreview();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function resetForm() {
   editingId = null;
   selectedCoverFile = null;
+  currentPreviewDataUrl = "";
   document.getElementById("gameForm").reset();
   document.getElementById("progresso").value = 100;
   document.getElementById("plataforma").value = "PC (Steam / GOG / Epic)";
@@ -242,6 +288,7 @@ function resetForm() {
   document.getElementById("submitBtn").textContent = "Publicar Tradução";
   document.getElementById("cancelEditBtn").classList.add("hidden");
   updateCoverPreview("");
+  syncLivePreview();
 }
 
 function updateCoverPreview(src) {
@@ -279,6 +326,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  ["titulo", "genero", "status", "progresso", "versao", "autor", "descricao", "capaUrl"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", syncLivePreview);
+    document.getElementById(id).addEventListener("change", syncLivePreview);
+  });
+
   document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     hideAlert();
@@ -312,16 +364,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     selectedCoverFile = file || null;
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => updateCoverPreview(String(reader.result || ""));
+      reader.onload = () => {
+        currentPreviewDataUrl = String(reader.result || "");
+        updateCoverPreview(currentPreviewDataUrl);
+        syncLivePreview();
+      };
       reader.readAsDataURL(file);
     } else {
+      currentPreviewDataUrl = "";
       updateCoverPreview(document.getElementById("capaUrl").value.trim());
+      syncLivePreview();
     }
   });
 
   document.getElementById("capaUrl").addEventListener("input", (e) => {
     if (!selectedCoverFile) {
       updateCoverPreview(e.target.value.trim());
+      syncLivePreview();
     }
   });
 
