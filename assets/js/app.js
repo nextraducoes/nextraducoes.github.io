@@ -88,7 +88,7 @@ function updateHero() {
   meta.innerHTML = "";
   const prog = Math.max(0, Math.min(100, Number(featured.progresso ?? 100)));
   meta.appendChild(createEl("span", "meta-chip", featured.status || "Em andamento"));
-  meta.appendChild(createEl("span", "meta-chip", `${prog}% traduzido`));
+  meta.appendChild(createEl("span", "meta-chip", `${prog}%`));
   meta.appendChild(createEl("span", "meta-chip", featured.versao || "v1.0"));
   if (featured.genero) meta.appendChild(createEl("span", "meta-chip", featured.genero));
 
@@ -198,11 +198,11 @@ function renderGames() {
     bar.appendChild(fill);
     body.appendChild(bar);
 
-    body.appendChild(createEl("p", "card-desc", game.descricao || "Clique para ver detalhes e instruções."));
+    body.appendChild(createEl("p", "card-desc", game.descricao || "Clique para ver ficha técnica e download."));
 
     const footer = createEl("div", "card-footer");
     footer.appendChild(createEl("span", "", game.autor || "NexTraduções"));
-    footer.appendChild(createEl("span", "", game.atualizadoEm || ""));
+    footer.appendChild(createEl("span", "card-cta", "Ver ficha →"));
     body.appendChild(footer);
 
     card.appendChild(body);
@@ -281,9 +281,25 @@ function closeModal() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
+  const grid = document.getElementById("gamesGrid");
+  const gridBtn = document.getElementById("gridViewBtn");
+  const listBtn = document.getElementById("listViewBtn");
+
   searchInput.addEventListener("input", renderGames);
   document.getElementById("genreFilter").addEventListener("change", renderGames);
   document.getElementById("sortFilter").addEventListener("change", renderGames);
+
+  gridBtn.addEventListener("click", () => {
+    grid.classList.remove("list-view");
+    gridBtn.classList.add("active");
+    listBtn.classList.remove("active");
+  });
+
+  listBtn.addEventListener("click", () => {
+    grid.classList.add("list-view");
+    listBtn.classList.add("active");
+    gridBtn.classList.remove("active");
+  });
 
   document.querySelectorAll("#statusPills .pill-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
