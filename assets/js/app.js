@@ -66,7 +66,7 @@ function updateHero() {
     : "Lançamento Recente";
   document.getElementById("heroTitle").textContent = featured.titulo || "Tradução em Destaque";
   document.getElementById("heroDesc").textContent =
-    featured.descricao || "Confira a ficha completa e baixe o patch de tradução para PC.";
+    featured.descricao || "Confira a ficha técnica completa e baixe o patch de tradução para PC.";
 
   const bg = document.getElementById("heroBg");
   const poster = document.getElementById("heroPoster");
@@ -83,14 +83,6 @@ function updateHero() {
     bg.style.backgroundImage = "";
     poster.classList.add("hidden");
   }
-
-  const meta = document.getElementById("heroMeta");
-  meta.innerHTML = "";
-  const prog = Math.max(0, Math.min(100, Number(featured.progresso ?? 100)));
-  meta.appendChild(createEl("span", "meta-chip", featured.status || "Em andamento"));
-  meta.appendChild(createEl("span", "meta-chip", `${prog}%`));
-  meta.appendChild(createEl("span", "meta-chip", featured.versao || "v1.0"));
-  if (featured.genero) meta.appendChild(createEl("span", "meta-chip", featured.genero));
 
   const actions = document.getElementById("heroActions");
   actions.innerHTML = "";
@@ -157,9 +149,10 @@ function renderGames() {
     return;
   }
 
-  for (const game of filtered) {
+  filtered.forEach((game, idx) => {
     const card = createEl("article", "game-card");
     card.tabIndex = 0;
+    card.style.animationDelay = `${Math.min(idx * 60, 420)}ms`;
 
     const coverWrap = createEl("div", "cover-wrap");
     if (isSafeUrl(game.capa)) {
@@ -177,35 +170,18 @@ function renderGames() {
     const badgeCls = STATUS_CLASS[game.status] || "badge-beta";
     coverWrap.appendChild(createEl("span", `badge cover-badge ${badgeCls}`, game.status || "Em andamento"));
 
-    if (game.genero) {
-      coverWrap.appendChild(createEl("span", "badge genre-badge", game.genero));
-    }
+    const prog = Math.max(0, Math.min(100, Number(game.progresso ?? 100)));
+    const bottomMeta = createEl("div", "cover-bottom-meta");
+    bottomMeta.appendChild(createEl("span", "", game.genero || "PC"));
+    bottomMeta.appendChild(createEl("span", "", `${game.versao || "v1.0"} • ${prog}%`));
+    coverWrap.appendChild(bottomMeta);
 
     card.appendChild(coverWrap);
 
-    const body = createEl("div", "card-body");
-    body.appendChild(createEl("h2", "card-title", game.titulo || "Sem título"));
-
-    const meta = createEl("div", "card-meta");
-    meta.appendChild(createEl("span", "", game.versao || "v1.0"));
-    const prog = Math.max(0, Math.min(100, Number(game.progresso ?? 100)));
-    meta.appendChild(createEl("span", "", `${prog}%`));
-    body.appendChild(meta);
-
-    const bar = createEl("div", "progress-bar");
-    const fill = createEl("div", "progress-fill");
-    fill.style.width = `${prog}%`;
-    bar.appendChild(fill);
-    body.appendChild(bar);
-
-    body.appendChild(createEl("p", "card-desc", game.descricao || "Clique para ver ficha técnica e download."));
-
-    const footer = createEl("div", "card-footer");
-    footer.appendChild(createEl("span", "", game.autor || "NexTraduções"));
-    footer.appendChild(createEl("span", "card-cta", "Ver ficha →"));
-    body.appendChild(footer);
-
-    card.appendChild(body);
+    const info = createEl("div", "card-info");
+    info.appendChild(createEl("h3", "card-title", game.titulo || "Sem título"));
+    info.appendChild(createEl("p", "card-sub", game.autor || "NexTraduções"));
+    card.appendChild(info);
 
     const open = () => openModal(game);
     card.addEventListener("click", open);
@@ -217,7 +193,7 @@ function renderGames() {
     });
 
     grid.appendChild(card);
-  }
+  });
 }
 
 function openModal(game) {
@@ -281,25 +257,9 @@ function closeModal() {
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
-  const grid = document.getElementById("gamesGrid");
-  const gridBtn = document.getElementById("gridViewBtn");
-  const listBtn = document.getElementById("listViewBtn");
-
   searchInput.addEventListener("input", renderGames);
   document.getElementById("genreFilter").addEventListener("change", renderGames);
   document.getElementById("sortFilter").addEventListener("change", renderGames);
-
-  gridBtn.addEventListener("click", () => {
-    grid.classList.remove("list-view");
-    gridBtn.classList.add("active");
-    listBtn.classList.remove("active");
-  });
-
-  listBtn.addEventListener("click", () => {
-    grid.classList.add("list-view");
-    listBtn.classList.add("active");
-    gridBtn.classList.remove("active");
-  });
 
   document.querySelectorAll("#statusPills .pill-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -317,10 +277,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeModal();
-    if (e.key === "/" && document.activeElement !== searchInput && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) {
-      e.preventDefault();
-      searchInput.focus();
-    }
   });
 
   loadGames();
