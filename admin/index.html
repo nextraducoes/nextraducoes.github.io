@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Admin — NexTraduções</title>
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <a href="../" class="brand-title">Nex<span>Traduções</span></a>
+        <span class="brand-sub">Painel de Controle</span>
+      </div>
+      <div class="header-actions">
+        <a href="../" class="btn btn-sm">Ver Site</a>
+        <button id="logoutBtn" type="button" class="btn btn-sm btn-danger hidden">Sair (Limpar Token)</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="alertBox" class="alert hidden" role="status"></div>
+
+    <section id="loginSection" class="panel-card">
+      <h2>Conectar ao GitHub</h2>
+      <p style="color: var(--muted); margin-bottom: 14px; font-size: 0.92rem;">
+        O painel salva as traduções e capas diretamente no repositório <strong>nextraducoes/nextraducoes.github.io</strong>.
+        O token fica salvo apenas no navegador do seu computador.
+      </p>
+      <details style="margin-bottom: 16px; color: var(--muted); font-size: 0.88rem;">
+        <summary style="cursor: pointer; color: var(--accent); font-weight: 600;">Como gerar seu Token (Fine-grained) em 1 minuto</summary>
+        <ol style="margin: 10px 0 0 20px; line-height: 1.7;">
+          <li>Acesse no GitHub: <strong>Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens</strong>.</li>
+          <li>Clique em <strong>Generate new token</strong>.</li>
+          <li>Em <strong>Resource owner</strong>, escolha <code>nextraducoes</code> (ou sua conta com acesso).</li>
+          <li>Em <strong>Repository access</strong>, selecione <strong>Only select repositories</strong> &rarr; <code>nextraducoes.github.io</code>.</li>
+          <li>Em <strong>Permissions &rarr; Repository permissions</strong>, mude <strong>Contents</strong> para <strong>Read and write</strong>.</li>
+          <li>Gere o token e cole abaixo.</li>
+        </ol>
+      </details>
+
+      <form id="loginForm" class="form-grid">
+        <div class="form-group full">
+          <label for="tokenInput">GitHub Personal Access Token</label>
+          <input id="tokenInput" class="form-control" type="password" placeholder="github_pat_... ou ghp_..." required>
+        </div>
+        <div class="form-group full">
+          <button id="loginBtn" type="submit" class="btn btn-primary" style="width: fit-content;">Entrar no Painel</button>
+        </div>
+      </form>
+    </section>
+
+    <div id="adminSection" class="hidden">
+      <section class="panel-card">
+        <h2 id="formHeading">Nova Tradução</h2>
+        <form id="gameForm" class="form-grid">
+          <div class="form-group">
+            <label for="titulo">Nome do Jogo *</label>
+            <input id="titulo" class="form-control" type="text" placeholder="Ex: Geneforge 1 - Mutagen" required>
+          </div>
+
+          <div class="form-group">
+            <label for="status">Status *</label>
+            <select id="status" class="form-control">
+              <option value="Concluído">Concluído</option>
+              <option value="Em andamento">Em andamento</option>
+              <option value="Beta">Beta</option>
+              <option value="Pausado">Pausado</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="progresso">Progresso (%)</label>
+            <input id="progresso" class="form-control" type="number" min="0" max="100" value="100">
+          </div>
+
+          <div class="form-group">
+            <label for="versao">Versão do Patch</label>
+            <input id="versao" class="form-control" type="text" placeholder="Ex: v1.0" value="v1.0">
+          </div>
+
+          <div class="form-group">
+            <label for="plataforma">Compatibilidade (PC)</label>
+            <input id="plataforma" class="form-control" type="text" value="PC (Steam / GOG / Epic)">
+          </div>
+
+          <div class="form-group">
+            <label for="autor">Autor / Equipe</label>
+            <input id="autor" class="form-control" type="text" value="NexTraduções">
+          </div>
+
+          <div class="form-group">
+            <label for="downloadUrl">Link Externo de Download *</label>
+            <input id="downloadUrl" class="form-control" type="url" placeholder="https://drive.google.com/..." required>
+          </div>
+
+          <div class="form-group">
+            <label for="mirror">Nome do Servidor (opcional)</label>
+            <input id="mirror" class="form-control" type="text" placeholder="Ex: Google Drive, MediaFire, Mega">
+          </div>
+
+          <div class="form-group full">
+            <label for="coverFile">Capa do Jogo (enviar imagem do PC ou colar URL abaixo)</label>
+            <div class="cover-preview-box">
+              <img id="coverPreview" class="cover-preview-img hidden" alt="Prévia da capa">
+              <div style="flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 8px;">
+                <input id="coverFile" class="form-control" type="file" accept="image/png, image/jpeg, image/webp">
+                <input id="capaUrl" class="form-control" type="text" placeholder="Ou cole a URL da imagem (https://...)">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group full">
+            <label for="descricao">Descrição e Informações</label>
+            <textarea id="descricao" class="form-control" placeholder="O que foi traduzido (menus, diálogos, texturas), versão do jogo compatível, observações..."></textarea>
+          </div>
+
+          <div class="form-group full">
+            <label for="instalacao">Instruções de Instalação</label>
+            <textarea id="instalacao" class="form-control" placeholder="1. Baixe o arquivo&#10;2. Extraia na pasta do jogo&#10;3. Execute o instalador ou substitua os arquivos"></textarea>
+          </div>
+
+          <div class="form-group full" style="flex-direction: row; gap: 10px; flex-wrap: wrap;">
+            <button id="submitBtn" type="submit" class="btn btn-primary">Publicar Tradução</button>
+            <button id="cancelEditBtn" type="button" class="btn hidden">Cancelar Edição</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel-card">
+        <h2>Traduções Publicadas</h2>
+        <div id="adminList" class="admin-list"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      NexTraduções &mdash; Painel Admin
+    </div>
+  </footer>
+
+  <script src="../assets/js/admin.js"></script>
+</body>
+</html>
