@@ -9,11 +9,22 @@
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <div class="brand">
-        <a href="../" class="brand-title">Nex<span>Traduções</span></a>
-        <span class="brand-sub">Painel de Controle</span>
-      </div>
-      <div class="header-actions">
+      <a href="../" class="brand">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="6" y1="12" x2="10" y2="12"></line>
+            <line x1="8" y1="10" x2="8" y2="14"></line>
+            <line x1="15" y1="13" x2="15.01" y2="13"></line>
+            <line x1="18" y1="11" x2="18.01" y2="11"></line>
+            <rect x="2" y="6" width="20" height="12" rx="4"></rect>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Nex<span>Traduções</span></span>
+          <span class="brand-sub">Painel de Controle</span>
+        </div>
+      </a>
+      <div class="header-nav">
         <a href="../" class="btn btn-sm">Ver Site</a>
         <button id="logoutBtn" type="button" class="btn btn-sm btn-danger hidden">Sair (Limpar Token)</button>
       </div>
@@ -30,7 +41,7 @@
         O token fica salvo apenas no navegador do seu computador.
       </p>
       <details style="margin-bottom: 16px; color: var(--muted); font-size: 0.88rem;">
-        <summary style="cursor: pointer; color: var(--accent); font-weight: 600;">Como gerar seu Token (Fine-grained) em 1 minuto</summary>
+        <summary style="cursor: pointer; color: var(--cyan); font-weight: 600;">Como gerar seu Token (Fine-grained) em 1 minuto</summary>
         <ol style="margin: 10px 0 0 20px; line-height: 1.7;">
           <li>Acesse no GitHub: <strong>Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens</strong>.</li>
           <li>Clique em <strong>Generate new token</strong>.</li>
@@ -59,6 +70,20 @@
           <div class="form-group">
             <label for="titulo">Nome do Jogo *</label>
             <input id="titulo" class="form-control" type="text" placeholder="Ex: Geneforge 1 - Mutagen" required>
+          </div>
+
+          <div class="form-group">
+            <label for="genero">Gênero</label>
+            <select id="genero" class="form-control">
+              <option value="RPG">RPG</option>
+              <option value="Ação">Ação</option>
+              <option value="Aventura">Aventura</option>
+              <option value="Visual Novel">Visual Novel</option>
+              <option value="Estratégia">Estratégia</option>
+              <option value="Terror">Terror</option>
+              <option value="Indie">Indie</option>
+              <option value="Outro">Outro</option>
+            </select>
           </div>
 
           <div class="form-group">
@@ -92,6 +117,11 @@
           </div>
 
           <div class="form-group">
+            <label for="lojaUrl">Link da Loja Oficial (opcional)</label>
+            <input id="lojaUrl" class="form-control" type="url" placeholder="https://store.steampowered.com/app/...">
+          </div>
+
+          <div class="form-group">
             <label for="downloadUrl">Link Externo de Download *</label>
             <input id="downloadUrl" class="form-control" type="url" placeholder="https://drive.google.com/..." required>
           </div>
@@ -99,6 +129,13 @@
           <div class="form-group">
             <label for="mirror">Nome do Servidor (opcional)</label>
             <input id="mirror" class="form-control" type="text" placeholder="Ex: Google Drive, MediaFire, Mega">
+          </div>
+
+          <div class="form-group full">
+            <label class="checkbox-row">
+              <input id="destaque" type="checkbox">
+              <span><strong>Destacar no topo do site</strong> (exibe este jogo no banner principal da página inicial)</span>
+            </label>
           </div>
 
           <div class="form-group full">
