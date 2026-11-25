@@ -105,7 +105,6 @@ async function fetchGamesFromApi() {
 }
 
 async function saveGamesToApi(message) {
-  // Re-fetch latest SHA to avoid 409 conflicts
   const latest = await ghFetch(`/repos/${OWNER}/${REPO}/contents/${DATA_PATH}?ref=main&t=${Date.now()}`);
   dataSha = latest.sha;
 
@@ -170,13 +169,13 @@ function renderAdminList() {
 
     const info = document.createElement("div");
     const title = document.createElement("strong");
-    title.textContent = game.titulo || "Sem título";
+    title.textContent = (game.destaque ? "★ " : "") + (game.titulo || "Sem título");
     info.appendChild(title);
 
     const sub = document.createElement("div");
     sub.style.fontSize = "0.82rem";
     sub.style.color = "var(--muted)";
-    sub.textContent = `${game.status || "Em andamento"} • ${game.progresso ?? 100}% • ${game.versao || "v1.0"}`;
+    sub.textContent = `${game.status || "Em andamento"} • ${game.progresso ?? 100}% • ${game.versao || "v1.0"}${game.genero ? " • " + game.genero : ""}`;
     info.appendChild(sub);
 
     left.appendChild(info);
@@ -214,14 +213,17 @@ function loadIntoForm(game) {
   document.getElementById("cancelEditBtn").classList.remove("hidden");
 
   document.getElementById("titulo").value = game.titulo || "";
+  document.getElementById("genero").value = game.genero || "RPG";
   document.getElementById("status").value = game.status || "Concluído";
   document.getElementById("progresso").value = game.progresso ?? 100;
   document.getElementById("versao").value = game.versao || "";
   document.getElementById("plataforma").value = game.plataforma || "";
   document.getElementById("autor").value = game.autor || "";
+  document.getElementById("lojaUrl").value = game.lojaUrl || "";
   document.getElementById("capaUrl").value = game.capa || "";
   document.getElementById("downloadUrl").value = game.downloadUrl || "";
   document.getElementById("mirror").value = game.mirror || "";
+  document.getElementById("destaque").checked = Boolean(game.destaque);
   document.getElementById("descricao").value = game.descricao || "";
   document.getElementById("instalacao").value = game.instalacao || "";
 
@@ -342,17 +344,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         capa = await uploadCoverFile(selectedCoverFile, titulo);
       }
 
+      const isDestaque = document.getElementById("destaque").checked;
+      if (isDestaque) {
+        gamesList = gamesList.map((g) => ({ ...g, destaque: false }));
+      }
+
       const entry = {
         id: editingId || `${slugify(titulo)}-${Date.now()}`,
         titulo,
+        genero: document.getElementById("genero").value,
         status: document.getElementById("status").value,
         progresso: Number(document.getElementById("progresso").value || 0),
         versao: document.getElementById("versao").value.trim() || "v1.0",
         plataforma: document.getElementById("plataforma").value.trim() || "PC",
         autor: document.getElementById("autor").value.trim() || "NexTraduções",
+        lojaUrl: document.getElementById("lojaUrl").value.trim(),
         capa,
         downloadUrl: document.getElementById("downloadUrl").value.trim(),
         mirror: document.getElementById("mirror").value.trim(),
+        destaque: isDestaque,
         descricao: document.getElementById("descricao").value.trim(),
         instalacao: document.getElementById("instalacao").value.trim(),
         atualizadoEm: new Date().toISOString().slice(0, 10),
