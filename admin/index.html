@@ -8,10 +8,10 @@
 </head>
 <body>
   <header class="site-header">
-    <div class="container header-inner">
+    <div class="header-inner">
       <a href="../" class="brand">
         <div class="brand-logo" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="6" y1="12" x2="10" y2="12"></line>
             <line x1="8" y1="10" x2="8" y2="14"></line>
             <line x1="15" y1="13" x2="15.01" y2="13"></line>
@@ -41,21 +41,19 @@
         O token fica salvo apenas no navegador do seu computador.
       </p>
       <details style="margin-bottom: 16px; color: var(--muted); font-size: 0.88rem;">
-        <summary style="cursor: pointer; color: var(--cyan); font-weight: 600;">Como gerar seu Token (Fine-grained) em 1 minuto</summary>
+        <summary style="cursor: pointer; color: var(--accent-bright); font-weight: 600;">Como gerar seu Token Clássico em 1 minuto</summary>
         <ol style="margin: 10px 0 0 20px; line-height: 1.7;">
-          <li>Acesse no GitHub: <strong>Settings &rarr; Developer settings &rarr; Personal access tokens &rarr; Fine-grained tokens</strong>.</li>
-          <li>Clique em <strong>Generate new token</strong>.</li>
-          <li>Em <strong>Resource owner</strong>, escolha <code>nextraducoes</code> (ou sua conta com acesso).</li>
-          <li>Em <strong>Repository access</strong>, selecione <strong>Only select repositories</strong> &rarr; <code>nextraducoes.github.io</code>.</li>
-          <li>Em <strong>Permissions &rarr; Repository permissions</strong>, mude <strong>Contents</strong> para <strong>Read and write</strong>.</li>
-          <li>Gere o token e cole abaixo.</li>
+          <li>Acesse <code>https://github.com/settings/tokens/new</code>.</li>
+          <li>Em <strong>Note</strong>, dê um nome (ex: <code>painel-nextraducoes</code>).</li>
+          <li>Marque a caixinha <strong><code>repo</code></strong>.</li>
+          <li>Clique em <strong>Generate token</strong>, copie o código <code>ghp_...</code> e cole abaixo.</li>
         </ol>
       </details>
 
       <form id="loginForm" class="form-grid">
         <div class="form-group full">
           <label for="tokenInput">GitHub Personal Access Token</label>
-          <input id="tokenInput" class="form-control" type="password" placeholder="github_pat_... ou ghp_..." required>
+          <input id="tokenInput" class="form-control" type="password" placeholder="ghp_..." required>
         </div>
         <div class="form-group full">
           <button id="loginBtn" type="submit" class="btn btn-primary" style="width: fit-content;">Entrar no Painel</button>
@@ -64,112 +62,146 @@
     </section>
 
     <div id="adminSection" class="hidden">
-      <section class="panel-card">
-        <h2 id="formHeading">Nova Tradução</h2>
-        <form id="gameForm" class="form-grid">
-          <div class="form-group">
-            <label for="titulo">Nome do Jogo *</label>
-            <input id="titulo" class="form-control" type="text" placeholder="Ex: Geneforge 1 - Mutagen" required>
-          </div>
-
-          <div class="form-group">
-            <label for="genero">Gênero</label>
-            <select id="genero" class="form-control">
-              <option value="RPG">RPG</option>
-              <option value="Ação">Ação</option>
-              <option value="Aventura">Aventura</option>
-              <option value="Visual Novel">Visual Novel</option>
-              <option value="Estratégia">Estratégia</option>
-              <option value="Terror">Terror</option>
-              <option value="Indie">Indie</option>
-              <option value="Outro">Outro</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="status">Status *</label>
-            <select id="status" class="form-control">
-              <option value="Concluído">Concluído</option>
-              <option value="Em andamento">Em andamento</option>
-              <option value="Beta">Beta</option>
-              <option value="Pausado">Pausado</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="progresso">Progresso (%)</label>
-            <input id="progresso" class="form-control" type="number" min="0" max="100" value="100">
-          </div>
-
-          <div class="form-group">
-            <label for="versao">Versão do Patch</label>
-            <input id="versao" class="form-control" type="text" placeholder="Ex: v1.0" value="v1.0">
-          </div>
-
-          <div class="form-group">
-            <label for="plataforma">Compatibilidade (PC)</label>
-            <input id="plataforma" class="form-control" type="text" value="PC (Steam / GOG / Epic)">
-          </div>
-
-          <div class="form-group">
-            <label for="autor">Autor / Equipe</label>
-            <input id="autor" class="form-control" type="text" value="NexTraduções">
-          </div>
-
-          <div class="form-group">
-            <label for="lojaUrl">Link da Loja Oficial (opcional)</label>
-            <input id="lojaUrl" class="form-control" type="url" placeholder="https://store.steampowered.com/app/...">
-          </div>
-
-          <div class="form-group">
-            <label for="downloadUrl">Link Externo de Download *</label>
-            <input id="downloadUrl" class="form-control" type="url" placeholder="https://drive.google.com/..." required>
-          </div>
-
-          <div class="form-group">
-            <label for="mirror">Nome do Servidor (opcional)</label>
-            <input id="mirror" class="form-control" type="text" placeholder="Ex: Google Drive, MediaFire, Mega">
-          </div>
-
-          <div class="form-group full">
-            <label class="checkbox-row">
-              <input id="destaque" type="checkbox">
-              <span><strong>Destacar no topo do site</strong> (exibe este jogo no banner principal da página inicial)</span>
-            </label>
-          </div>
-
-          <div class="form-group full">
-            <label for="coverFile">Capa do Jogo (enviar imagem do PC ou colar URL abaixo)</label>
-            <div class="cover-preview-box">
-              <img id="coverPreview" class="cover-preview-img hidden" alt="Prévia da capa">
-              <div style="flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 8px;">
-                <input id="coverFile" class="form-control" type="file" accept="image/png, image/jpeg, image/webp">
-                <input id="capaUrl" class="form-control" type="text" placeholder="Ou cole a URL da imagem (https://...)">
+      <div class="admin-layout">
+        <div>
+          <section class="panel-card">
+            <h2 id="formHeading">Nova Tradução</h2>
+            <form id="gameForm" class="form-grid">
+              <div class="form-group">
+                <label for="titulo">Nome do Jogo *</label>
+                <input id="titulo" class="form-control" type="text" placeholder="Ex: Geneforge 1 - Mutagen" required>
               </div>
-            </div>
-          </div>
 
-          <div class="form-group full">
-            <label for="descricao">Descrição e Informações</label>
-            <textarea id="descricao" class="form-control" placeholder="O que foi traduzido (menus, diálogos, texturas), versão do jogo compatível, observações..."></textarea>
-          </div>
+              <div class="form-group">
+                <label for="genero">Gênero</label>
+                <select id="genero" class="form-control">
+                  <option value="RPG">RPG</option>
+                  <option value="Ação">Ação</option>
+                  <option value="Aventura">Aventura</option>
+                  <option value="Visual Novel">Visual Novel</option>
+                  <option value="Estratégia">Estratégia</option>
+                  <option value="Terror">Terror</option>
+                  <option value="Indie">Indie</option>
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
 
-          <div class="form-group full">
-            <label for="instalacao">Instruções de Instalação</label>
-            <textarea id="instalacao" class="form-control" placeholder="1. Baixe o arquivo&#10;2. Extraia na pasta do jogo&#10;3. Execute o instalador ou substitua os arquivos"></textarea>
-          </div>
+              <div class="form-group">
+                <label for="status">Status *</label>
+                <select id="status" class="form-control">
+                  <option value="Concluído">Concluído</option>
+                  <option value="Em andamento">Em andamento</option>
+                  <option value="Beta">Beta</option>
+                  <option value="Pausado">Pausado</option>
+                </select>
+              </div>
 
-          <div class="form-group full" style="flex-direction: row; gap: 10px; flex-wrap: wrap;">
-            <button id="submitBtn" type="submit" class="btn btn-primary">Publicar Tradução</button>
-            <button id="cancelEditBtn" type="button" class="btn hidden">Cancelar Edição</button>
-          </div>
-        </form>
-      </section>
+              <div class="form-group">
+                <label for="progresso">Progresso (%)</label>
+                <input id="progresso" class="form-control" type="number" min="0" max="100" value="100">
+              </div>
 
-      <section class="panel-card">
-        <h2>Traduções Publicadas</h2>
-        <div id="adminList" class="admin-list"></div>
-      </section>
+              <div class="form-group">
+                <label for="versao">Versão do Patch</label>
+                <input id="versao" class="form-control" type="text" placeholder="Ex: v1.0" value="v1.0">
+              </div>
+
+              <div class="form-group">
+                <label for="plataforma">Compatibilidade (PC)</label>
+                <input id="plataforma" class="form-control" type="text" value="PC (Steam / GOG / Epic)">
+              </div>
+
+              <div class="form-group">
+                <label for="autor">Autor / Equipe</label>
+                <input id="autor" class="form-control" type="text" value="NexTraduções">
+              </div>
+
+              <div class="form-group">
+                <label for="lojaUrl">Link da Loja Oficial (opcional)</label>
+                <input id="lojaUrl" class="form-control" type="url" placeholder="https://store.steampowered.com/app/...">
+              </div>
+
+              <div class="form-group">
+                <label for="downloadUrl">Link Externo de Download *</label>
+                <input id="downloadUrl" class="form-control" type="url" placeholder="https://drive.google.com/..." required>
+              </div>
+
+              <div class="form-group">
+                <label for="mirror">Nome do Servidor (opcional)</label>
+                <input id="mirror" class="form-control" type="text" placeholder="Ex: Google Drive, MediaFire, Mega">
+              </div>
+
+              <div class="form-group full">
+                <label class="checkbox-row">
+                  <input id="destaque" type="checkbox">
+                  <span><strong>Destacar no topo do site</strong> (exibe este jogo no banner principal da página inicial)</span>
+                </label>
+              </div>
+
+              <div class="form-group full">
+                <label for="coverFile">Capa do Jogo (enviar imagem do PC ou colar URL abaixo)</label>
+                <div class="cover-preview-box">
+                  <img id="coverPreview" class="cover-preview-img hidden" alt="Prévia da capa">
+                  <div style="flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 8px;">
+                    <input id="coverFile" class="form-control" type="file" accept="image/png, image/jpeg, image/webp">
+                    <input id="capaUrl" class="form-control" type="text" placeholder="Ou cole a URL da imagem (https://...)">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group full">
+                <label for="descricao">Descrição e Informações</label>
+                <textarea id="descricao" class="form-control" placeholder="O que foi traduzido (menus, diálogos, texturas), versão do jogo compatível, observações..."></textarea>
+              </div>
+
+              <div class="form-group full">
+                <label for="instalacao">Instruções de Instalação</label>
+                <textarea id="instalacao" class="form-control" placeholder="1. Baixe o arquivo&#10;2. Extraia na pasta do jogo&#10;3. Execute o instalador ou substitua os arquivos"></textarea>
+              </div>
+
+              <div class="form-group full" style="flex-direction: row; gap: 10px; flex-wrap: wrap;">
+                <button id="submitBtn" type="submit" class="btn btn-primary">Publicar Tradução</button>
+                <button id="cancelEditBtn" type="button" class="btn hidden">Cancelar Edição</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="panel-card">
+            <h2>Traduções Publicadas</h2>
+            <div id="adminList" class="admin-list"></div>
+          </section>
+        </div>
+
+        <aside class="preview-sticky">
+          <div class="panel-card">
+            <h2>Prévia do Card</h2>
+            <article class="game-card" style="cursor: default;">
+              <div class="cover-wrap">
+                <img id="liveCardImg" class="hidden" alt="Prévia">
+                <div id="liveCardPlaceholder" class="cover-placeholder">Sem capa</div>
+                <div class="cover-gradient"></div>
+                <span id="liveCardStatus" class="badge cover-badge badge-concluido">Concluído</span>
+                <span id="liveCardGenre" class="badge genre-badge">RPG</span>
+              </div>
+              <div class="card-body">
+                <h3 id="liveCardTitle" class="card-title">Nome do Jogo</h3>
+                <div class="card-meta">
+                  <span id="liveCardVersion">v1.0</span>
+                  <span id="liveCardProgressText">100%</span>
+                </div>
+                <div class="progress-bar">
+                  <div id="liveCardProgressBar" class="progress-fill" style="width: 100%;"></div>
+                </div>
+                <p id="liveCardDesc" class="card-desc">A descrição do projeto aparecerá aqui.</p>
+                <div class="card-footer">
+                  <span id="liveCardAuthor">NexTraduções</span>
+                  <span class="card-cta">Ver ficha →</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </aside>
+      </div>
     </div>
   </main>
 
