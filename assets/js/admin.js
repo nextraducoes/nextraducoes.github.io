@@ -5,8 +5,8 @@ const TOKEN_KEY = "nextraducoes_gh_token";
 const STATUS_CLASS = {
   "Concluído": "badge-concluido",
   "Em andamento": "badge-andamento",
-  "Beta": "badge-beta",
-  "Pausado": "badge-pausado",
+  
+  
 };
 
 let currentToken = "";
@@ -100,7 +100,7 @@ async function verifyAndLoad(token) {
   document.getElementById("adminSection").classList.remove("hidden");
   document.getElementById("logoutBtn").classList.remove("hidden");
   await fetchGamesFromApi();
-  syncLivePreview();
+  syncDownloadRequirement(); syncLivePreview();
 }
 
 async function fetchGamesFromApi() {
@@ -227,7 +227,7 @@ function renderAdminList() {
     const actions = document.createElement("div");
     actions.className = "admin-item-actions";
 
-    const editBtn = document.createElement("button");
+    const openLink = document.createElement("a"); openLink.className = "btn btn-sm"; openLink.textContent = "Abrir"; openLink.href = `../jogo/?id=${encodeURIComponent(game.id)}`; openLink.target = "_blank"; actions.appendChild(openLink); const editBtn = document.createElement("button");
     editBtn.type = "button";
     editBtn.className = "btn btn-sm";
     editBtn.textContent = "Editar";
@@ -272,7 +272,7 @@ function loadIntoForm(game) {
   document.getElementById("instalacao").value = game.instalacao || "";
 
   updateCoverPreview(game.capa || "");
-  syncLivePreview();
+  syncDownloadRequirement(); syncLivePreview();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -288,7 +288,7 @@ function resetForm() {
   document.getElementById("submitBtn").textContent = "Publicar Tradução";
   document.getElementById("cancelEditBtn").classList.add("hidden");
   updateCoverPreview("");
-  syncLivePreview();
+  syncDownloadRequirement(); syncLivePreview();
 }
 
 function updateCoverPreview(src) {
@@ -328,7 +328,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   ["titulo", "genero", "status", "progresso", "versao", "autor", "descricao", "capaUrl"].forEach((id) => {
     document.getElementById(id).addEventListener("input", syncLivePreview);
-    document.getElementById(id).addEventListener("change", syncLivePreview);
+    document.getElementById(id).addEventListener("change", () => { syncDownloadRequirement(); syncLivePreview(); });
   });
 
   document.getElementById("loginForm").addEventListener("submit", async (e) => {
@@ -367,20 +367,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       reader.onload = () => {
         currentPreviewDataUrl = String(reader.result || "");
         updateCoverPreview(currentPreviewDataUrl);
-        syncLivePreview();
+        syncDownloadRequirement(); syncLivePreview();
       };
       reader.readAsDataURL(file);
     } else {
       currentPreviewDataUrl = "";
       updateCoverPreview(document.getElementById("capaUrl").value.trim());
-      syncLivePreview();
+      syncDownloadRequirement(); syncLivePreview();
     }
   });
 
   document.getElementById("capaUrl").addEventListener("input", (e) => {
     if (!selectedCoverFile) {
       updateCoverPreview(e.target.value.trim());
-      syncLivePreview();
+      syncDownloadRequirement(); syncLivePreview();
     }
   });
 
@@ -450,3 +450,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 });
+function syncDownloadRequirement() {
+  const status = document.getElementById("status").value;
+  const input = document.getElementById("downloadUrl");
+  const label = document.getElementById("downloadUrlLabel");
+  if (!input || !label) return;
+  if (status === "Em andamento") {
+    input.required = false;
+    label.textContent = "Link Externo de Download (opcional em andamento)";
+  } else {
+    input.required = true;
+    label.textContent = "Link Externo de Download *";
+  }
+}
