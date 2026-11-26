@@ -167,6 +167,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       actions.appendChild(store);
     }
 
+    const sinopseBlock = document.getElementById("sinopseBlock");
+    const sinopseEl = document.getElementById("gameSinopse");
+    if (sinopseBlock && sinopseEl) {
+      if (game.sinopse) {
+        sinopseEl.textContent = game.sinopse;
+        sinopseBlock.classList.remove("hidden");
+      } else {
+        sinopseBlock.classList.add("hidden");
+      }
+    }
     document.getElementById("gameDesc").textContent = game.descricao || "Nenhuma descrição informada.";
     document.getElementById("gameInstall").textContent =
       game.instalacao ||
