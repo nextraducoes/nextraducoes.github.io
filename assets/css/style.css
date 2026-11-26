@@ -1018,3 +1018,99 @@ textarea.form-control {
 .hidden {
   display: none !important;
 }
+/* Individual Game Page */
+.game-hero {
+  position: relative;
+  padding: 120px 0 56px;
+  overflow: hidden;
+}
+
+.game-hero-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+.game-cover-large {
+  aspect-ratio: 3 / 4;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: 0 28px 65px rgba(0, 0, 0, 0.7);
+}
+
+.game-cover-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.game-page-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 18px 0;
+  margin: 18px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.game-page-meta div strong {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.game-page-meta div span {
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+
+.game-details-body {
+  padding: 20px 0 80px;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap: 48px;
+}
+
+.detail-block h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.35rem;
+  margin-bottom: 10px;
+  color: #ff8fa3;
+}
+
+.detail-block p {
+  color: var(--text-soft);
+  white-space: pre-line;
+  font-size: 0.96rem;
+}
+
+.wip-notice {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  color: #fcd34d;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media (max-width: 820px) {
+  .game-hero-grid,
+  .game-details-body {
+    grid-template-columns: 1fr;
+  }
+  .game-cover-large {
+    max-width: 240px;
+  }
+}
