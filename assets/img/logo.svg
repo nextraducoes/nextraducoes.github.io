@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="nexGrad" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ff4d6d"/>
+      <stop offset="55%" stop-color="#c026d3"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="nexAccent" x1="36" y1="14" x2="56" y2="34" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#0d111a" stroke="url(#nexGrad)" stroke-width="2.5"/>
+  <!-- Stylized N formed by two angled pillars and a forward-translation bridge -->
+  <path d="M16 48V18L24 14V48H16Z" fill="url(#nexGrad)"/>
+  <path d="M18 16L40 46L48 48L26 18L18 16Z" fill="#f8fafc"/>
+  <path d="M40 48V24L48 20V48H40Z" fill="url(#nexGrad)"/>
+  <!-- Forward arrow / "Next" spark at top-right -->
+  <path d="M36 14H50V28L45 23L39 29L35 25L41 19L36 14Z" fill="url(#nexAccent)"/>
+</svg>
