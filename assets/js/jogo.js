@@ -23,6 +23,60 @@ function resolveCover(url) {
   return trimmed;
 }
 
+function resolveAbsoluteCover(url) {
+  if (!url) return "https://nextraducoes.github.io/assets/img/logo.svg";
+  const trimmed = url.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+  if (trimmed.startsWith("./")) return `https://nextraducoes.github.io/${trimmed.slice(2)}`;
+  return `https://nextraducoes.github.io/${trimmed.replace(/^\/+/, "")}`;
+}
+
+function updateDynamicSeo(game, gameId) {
+  const pageUrl = `https://nextraducoes.github.io/jogo/?id=${encodeURIComponent(gameId)}`;
+  const title = `${game.titulo || "Jogo"} — Tradução PT-BR | NexTraduções`;
+  const desc = game.descricao
+    ? game.descricao.slice(0, 155)
+    : `Tradução em Português (PT-BR) de ${game.titulo || "jogo"} para PC (${game.status || "Em andamento"}).`;
+  const imgUrl = isSafeUrl(game.capa)
+    ? resolveAbsoluteCover(game.capa)
+    : "https://nextraducoes.github.io/assets/img/logo.svg";
+
+  document.title = title;
+  const metaDesc = document.querySelector('meta[name="description"]');
+  if (metaDesc) metaDesc.setAttribute("content", desc);
+  const canonical = document.getElementById("canonicalLink");
+  if (canonical) canonical.setAttribute("href", pageUrl);
+  const ogTitle = document.getElementById("ogTitle");
+  if (ogTitle) ogTitle.setAttribute("content", title);
+  const ogDesc = document.getElementById("ogDesc");
+  if (ogDesc) ogDesc.setAttribute("content", desc);
+  const ogUrl = document.getElementById("ogUrl");
+  if (ogUrl) ogUrl.setAttribute("content", pageUrl);
+  const ogImage = document.getElementById("ogImage");
+  if (ogImage) ogImage.setAttribute("content", imgUrl);
+
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: `Tradução PT-BR — ${game.titulo || "Jogo"}`,
+    applicationCategory: "GameApplication",
+    operatingSystem: game.plataforma || "PC",
+    softwareVersion: game.versao || "v1.0",
+    inLanguage: "pt-BR",
+    url: pageUrl,
+    image: imgUrl,
+    description: desc,
+    author: {
+      "@type": "Organization",
+      name: game.autor || "NexTraduções",
+    },
+  };
+  const script = document.createElement("script");
+  script.type = "application/ld+json";
+  script.textContent = JSON.stringify(ld);
+  document.head.appendChild(script);
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const gameId = params.get("id");
@@ -49,7 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    document.title = `${game.titulo || "Jogo"} — NexTraduções`;
+    updateDynamicSeo(game, gameId);
 
     const coverBox = document.getElementById("gameCover");
     coverBox.innerHTML = "";
