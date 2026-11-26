@@ -76,7 +76,7 @@
       <div class="catalog-top">
         <div class="catalog-heading">
           <h2>Catálogo de Traduções</h2>
-          <p>Clique em qualquer capa para ver a ficha completa e baixar o patch.</p>
+          <p>Clique em qualquer capa para abrir a página do jogo e baixar o patch.</p>
         </div>
       </div>
 
@@ -85,8 +85,6 @@
           <button type="button" class="pill-btn active" data-status="all">Todos</button>
           <button type="button" class="pill-btn" data-status="Concluído">Concluído</button>
           <button type="button" class="pill-btn" data-status="Em andamento">Em andamento</button>
-          <button type="button" class="pill-btn" data-status="Beta">Beta</button>
-          <button type="button" class="pill-btn" data-status="Pausado">Pausado</button>
         </div>
 
         <div class="filter-inputs">
@@ -148,40 +146,6 @@
       </div>
     </section>
   </main>
-
-  <div id="gameModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal">
-      <button id="modalClose" class="modal-close" aria-label="Fechar">&times;</button>
-      <div class="modal-content">
-        <div id="modalCover" class="modal-cover"></div>
-        <div class="modal-info">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <span id="modalBadge" class="badge"></span>
-            <span id="modalGenre" class="badge" style="background: rgba(255,255,255,0.06); color: var(--muted);"></span>
-          </div>
-          <h2 id="modalTitle"></h2>
-          <div class="info-grid">
-            <div class="info-item"><strong>Versão</strong><span id="modalVersao"></span></div>
-            <div class="info-item"><strong>Progresso</strong><span id="modalProgresso"></span></div>
-            <div class="info-item"><strong>Plataforma</strong><span id="modalPlataforma"></span></div>
-            <div class="info-item"><strong>Autor</strong><span id="modalAutor"></span></div>
-          </div>
-          <div class="section-block">
-            <h3>Sobre a tradução</h3>
-            <p id="modalDesc"></p>
-          </div>
-          <div class="section-block">
-            <h3>Como instalar</h3>
-            <p id="modalInstall"></p>
-          </div>
-          <div class="modal-actions">
-            <a id="modalDownload" class="btn btn-primary" href="#" target="_blank" rel="noopener noreferrer">Baixar Patch</a>
-            <a id="modalStore" class="btn hidden" href="#" target="_blank" rel="noopener noreferrer">Página do Jogo</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <footer class="site-footer">
     <div class="container">
