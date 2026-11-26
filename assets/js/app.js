@@ -68,7 +68,7 @@ function updateHero() {
     : "Lançamento Recente";
   document.getElementById("heroTitle").textContent = featured.titulo || "Tradução em Destaque";
   document.getElementById("heroDesc").textContent =
-    featured.descricao || "Confira a página completa do jogo e acompanhe o projeto.";
+    featured.sinopse || featured.descricao || "Confira a página completa do jogo e acompanhe o projeto.";
 
   const bg = document.getElementById("heroBg");
   const poster = document.getElementById("heroPoster");
