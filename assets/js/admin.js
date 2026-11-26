@@ -128,6 +128,7 @@ async function saveGamesToApi(message) {
     }),
   });
   dataSha = res.content.sha;
+  await updateSitemapInApi();
 }
 
 async function uploadCoverFile(file, title) {
@@ -462,4 +463,36 @@ function syncDownloadRequirement() {
     input.required = true;
     label.textContent = "Link Externo de Download *";
   }
+}
+function buildSitemapXml(list) {
+  const urls = [
+    `  <url>\n    <loc>https://nextraducoes.github.io/</loc>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>`,
+  ];
+  for (const g of list) {
+    if (!g.id) continue;
+    const loc = `https://nextraducoes.github.io/jogo/?id=${encodeURIComponent(g.id)}`;
+    const lastmod = g.atualizadoEm ? `\n    <lastmod>${g.atualizadoEm}</lastmod>` : "";
+    urls.push(`  <url>\n    <loc>${loc}</loc>${lastmod}\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`);
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join("\n")}\n</urlset>\n`;
+}
+
+async function updateSitemapInApi() {
+  let sha;
+  try {
+    const existing = await ghFetch(`/repos/${OWNER}/${REPO}/contents/sitemap.xml?ref=main&t=${Date.now()}`);
+    sha = existing.sha;
+  } catch {}
+  const xml = buildSitemapXml(gamesList);
+  const payload = {
+    message: "chore: update sitemap.xml",
+    content: utf8ToBase64(xml),
+    branch: "main",
+  };
+  if (sha) payload.sha = sha;
+  await ghFetch(`/repos/${OWNER}/${REPO}/contents/sitemap.xml`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
 }
