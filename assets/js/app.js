@@ -143,7 +143,7 @@ function renderGames() {
         "p",
         "",
         allGames.length === 0
-          ? "Acesse o Painel Admin para cadastrar a primeira tradução."
+          ? "Novas traduções serão publicadas em breve."
           : "Tente buscar por outro nome ou limpar os filtros selecionados."
       )
     );
