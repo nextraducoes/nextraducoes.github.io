@@ -269,6 +269,7 @@ function loadIntoForm(game) {
   document.getElementById("downloadUrl").value = game.downloadUrl || "";
   document.getElementById("mirror").value = game.mirror || "";
   document.getElementById("destaque").checked = Boolean(game.destaque);
+  document.getElementById("sinopse").value = game.sinopse || "";
   document.getElementById("descricao").value = game.descricao || "";
   document.getElementById("instalacao").value = game.instalacao || "";
 
@@ -423,6 +424,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         downloadUrl: document.getElementById("downloadUrl").value.trim(),
         mirror: document.getElementById("mirror").value.trim(),
         destaque: isDestaque,
+        sinopse: document.getElementById("sinopse").value.trim(),
         descricao: document.getElementById("descricao").value.trim(),
         instalacao: document.getElementById("instalacao").value.trim(),
         atualizadoEm: new Date().toISOString().slice(0, 10),
