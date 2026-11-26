@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("gameInstall").textContent =
       game.instalacao ||
       (isSafeUrl(game.downloadUrl)
-        ? "Extraia o conteúdo do patch na pasta raiz do jogo."
+        ? "Baixe e execute o instalador (.exe), selecione a pasta do jogo e conclua a instalação."
         : "As instruções serão publicadas assim que o patch for lançado.");
 
     loading.classList.add("hidden");
